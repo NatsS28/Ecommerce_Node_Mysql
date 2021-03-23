@@ -35,12 +35,122 @@
 
 <script>
     window.addEventListener('load', () => {
-        var title = localStorage.getItem('title');
-        var cost = localStorage.getItem('cost');
-        var img = localStorage.getItem('img');
+        let title, cost, img;
+        let j = 0;
 
-        console.log(title + " " + cost + " " + img);
+        let todos;
+        if (localStorage.getItem('todos') === null) {
+            todos = [];
+        } else {
+            todos = JSON.parse(localStorage.getItem("todos"));
+        }
+        for (i = 0; i < todos.length; i = i + 3) {
+            //  console.log(todos[i] + " ");
+            title = todos[i];
+            console.log(title);
+            cost = todos[i + 1];
+            console.log(cost);
+            img = todos[i + 2];
+            console.log(img);
+            addItem(title, cost, img);
+            updateTotal();
+
+
+
+        }
+
     })
+
+    function removeLocal(todo) {
+        let todos;
+        if (localStorage.getItem('todos') === null) {
+            todos = [];
+        } else {
+            todos = JSON.parse(localStorage.getItem("todos"));
+        }
+        //console.log();
+        const todoIndex = todo.children[0].innerText;
+        todos.splice(todos.indexOf(todoIndex), 1);
+        localStorage.setItem("todos", JSON.stringify(todos));
+
+    }
+
+    function removeCartItem(e) {
+        console.log(e);
+        var buttonClicked = e.target;
+        buttonClicked.parentElement.parentElement.remove();
+
+        console.log(buttonClicked.parentElement.parentElement.innerText);
+        removeLocal(buttonClicked.parentElement.parentElement);
+        removeLocal(buttonClicked.parentElement);
+        removeLocal(buttonClicked.parentElement);
+
+        updateTotal();
+
+    }
+
+    function quantityChanged(e) {
+        var input = e.target;
+        if (isNaN(input.value) || input.value <= 0) {
+            input.value = 1;
+        }
+        updateTotal();
+    }
+
+    function addItem(title, cost, img) {
+        var cartRow = document.createElement('div');
+        cartRow.classList.add('cart-row');
+        var cartItemsList = document.getElementsByClassName('cart-item-title');
+        for (var i = 0; i < cartItemsList.length; i++) {
+            if (cartItemsList[i].innerText == title) {
+                alert("Item Already Added");
+                return;
+            }
+        }
+        var cartItems = document.getElementsByClassName('cart-items')[0];
+        var cartContent = `
+    <div class="cart-item cart-column">
+    <img class="cart-item-image" src="${img}" width="100" height="100">
+    <span class="cart-item-title">${title}</span>
+</div>
+<span class="cart-price cart-column">${cost}</span>
+<div class="cart-quantity cart-column">
+    <input class="cart-quantity-input" type="number" value="1">
+    <button class="btn btn-danger" type="button">REMOVE</button>
+</div>`
+        cartRow.innerHTML = cartContent;
+        cartItems.appendChild(cartRow);
+        cartRow.getElementsByClassName('btn-danger')[0].addEventListener('click', removeCartItem);
+        cartRow.getElementsByClassName('cart-quantity')[0].addEventListener('change', quantityChanged);
+
+    }
+
+
+
+    function updateTotal() {
+        var cartItem = document.getElementsByClassName('cart-items')[0];
+        var cartRows = cartItem.getElementsByClassName('cart-row');
+        var total = 0;
+        for (var i = 0; i < cartRows.length; i++) {
+            var cartRow = cartRows[i];
+            var priceEl = cartRow.getElementsByClassName('cart-price')[0];
+            var quantityEl = cartRow.getElementsByClassName('cart-quantity-input')[0];
+            //console.log(quantityEl)
+            // console.log(priceEl, quantityEl);
+            var price = parseFloat(priceEl.innerText.replace('Rs', ''));
+            var quantity = quantityEl.value;
+            //console.log();
+            console.log(price, quantity);
+            total = total + (price * quantity)
+
+        }
+        //x total = Math.round(total * 100) / 100
+        document.getElementsByClassName('cart-total-price')[0].innerText = "RS. " + total
+
+    }
+
+
+
 </script>
 
 </html>

@@ -404,9 +404,17 @@ ${products.map(function (items) {
         var cost = Item.getElementsByClassName('shop-item-price')[0].innerText;
         var img = Item.getElementsByClassName('shop-item-image')[0].src;
 
-        localStorage.setItem("title", title);
-        localStorage.setItem("cost", cost);
-        localStorage.setItem("img", img);
+        //      localStorage.setItem("title", title);
+        //     localStorage.setItem("cost", cost);
+        //    localStorage.setItem("img", img);
+        let todos;
+        if (localStorage.getItem('todos') === null) {
+            todos = [];
+        } else {
+            todos = JSON.parse(localStorage.getItem("todos"));
+        }
+        todos.push(title, cost, img);
+        localStorage.setItem("todos", JSON.stringify(todos));
 
 
 
